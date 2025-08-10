@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <title>Mon JRPG</title>
+  <style>
+    :root { --bg:#0e1224; --fg:#eaf0ff; }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:radial-gradient(900px 500px at 70% 20%, #151a3e, var(--bg));color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
+    .wrap{min-height:100%;display:grid;place-items:center;padding:12px}
+    .card{width:min(1100px,100%);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    header,footer{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.1)}
+    footer{border-top:1px solid rgba(255,255,255,.1);border-bottom:none;color:#9fb0d7;font-size:14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    h1{font-size:18px;margin:0}
+    canvas{display:block;width:100%;height:auto;background:linear-gradient(180deg,rgba(110,231,255,.08),rgba(167,139,250,.05)),linear-gradient(#0b0e1f,#0b0d1a,#0b0e1f)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <header>
+        <h1>Mon JRPG – Démo</h1>
+      </header>
+
+      <!-- Canvas du jeu -->
+      <canvas id="game" width="1100" height="460" aria-label="Zone de jeu"></canvas>
+
+      <footer>
+        <div>Ce fichier charge <code>Rpg.js</code>. Si ce fichier définit <code>window.setupGame(canvas)</code>, il sera exécuté automatiquement.</div>
+        <div>Astuce: Ajoute ce site à l’écran d’accueil pour un mode “app”.</div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Ton script -->
+  <script src="Rpg.js"></script>
+
+  <!-- Petit bootstrap pour démarrer la boucle si ton script expose setupGame(canvas) -->
+  <script>
+    (function(){
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      // Si ton Rpg.js expose window.setupGame, on l'appelle pour te laisser dessiner/mettre à jour
+      let game = null;
+      if (typeof window.setupGame === 'function') {
+        game = window.setupGame(canvas, ctx) || null;
+      }
+      // Boucle par défaut (affiche un message si Rpg.js ne fournit rien)
+      function frame(){
+        if (game && game.update && game.draw){
+          game.update();
+          game.draw();
+        } else {
+          // placeholder visuel pour confirmer que tout fonctionne
+          ctx.clearRect(0,0,canvas.width,canvas.height);
+          ctx.fillStyle = 'rgba(255,255,255,0.06)';
+          ctx.fillRect(20,20,canvas.width-40,140);
+          ctx.fillStyle = '#eaf0ff';
+          ctx.font = '16px system-ui';
+          ctx.fillText('Rpg.js est chargé. Expose une fonction window.setupGame(canvas, ctx) pour prendre le contrôle.', 32, 60);
+          ctx.fillText('Exemple :', 32, 90);
+          ctx.fillText('window.setupGame = (canvas, ctx) => ({ update(){}, draw(){ ctx.fillRect(200,200,50,50); } });', 32, 114);
+        }
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html>
